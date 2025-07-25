@@ -48,4 +48,8 @@ class MujocoSimulation:
         max_depth = depth.max()
         print(f"Depth min: {min_depth}, max: {max_depth}")
 
+        depth *= camera.depth_factor
+        # type change to uint16 for depth
+        depth = depth.astype(np.uint16)
+
         return rgb_image, depth

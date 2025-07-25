@@ -34,6 +34,7 @@ class Camera:
         self.camera_width = camera_width
         self.camera_height = camera_height
         self.renderer = None
+        self.depth_factor = 1000.0
 
     def get_renderer(self, model: mujoco.MjModel) -> mujoco.Renderer:
         """レンダラーを取得"""

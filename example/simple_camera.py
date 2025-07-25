@@ -68,7 +68,7 @@ for camera in [ceil_camera, hand_camera]:
     data = []
     for y in range(depth.shape[0]):
         for x in range(depth.shape[1]):
-            z = depth[y, x]
+            z = depth[y, x] / camera.depth_factor
             if z > 0:  # Skip invalid depth values
                 x_world = (x - intrinsic[0, 2]) * z / intrinsic[0, 0]
                 y_world = (y - intrinsic[1, 2]) * z / intrinsic[1, 1]
