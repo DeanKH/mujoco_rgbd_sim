@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 @dataclass
 class GeometricObject(ABC):
     """Abstract base class for geometric objects in MuJoCo scene"""
+
     name: str
     position: Tuple[float, float, float] = (0, 0, 0)
     euler: Tuple[float, float, float] = (0, 0, 0)
@@ -30,7 +31,7 @@ class GeometricObject(ABC):
             pos=" ".join(map(str, self.position)),
             euler=" ".join(map(str, self.euler)),
         )
-        geom_elem = ET.SubElement(
+        ET.SubElement(
             body_elem,
             "geom",
             name=self.name,
@@ -44,6 +45,7 @@ class GeometricObject(ABC):
 @dataclass
 class Box(GeometricObject):
     """Box geometric object"""
+
     size: Tuple[float, float, float] = (0.1, 0.1, 0.1)
 
     def get_geom_type(self) -> str:
@@ -56,6 +58,7 @@ class Box(GeometricObject):
 @dataclass
 class Cylinder(GeometricObject):
     """Cylinder geometric object"""
+
     radius: float = 0.05
     height: float = 0.1
 
@@ -69,6 +72,7 @@ class Cylinder(GeometricObject):
 @dataclass
 class Mesh(GeometricObject):
     """Mesh geometric object"""
+
     mesh_name: str = ""
     scale: Tuple[float, float, float] = (1.0, 1.0, 1.0)
 
@@ -86,7 +90,7 @@ class Mesh(GeometricObject):
             pos=" ".join(map(str, self.position)),
             euler=" ".join(map(str, self.euler)),
         )
-        geom_elem = ET.SubElement(
+        ET.SubElement(
             body_elem,
             "geom",
             name=self.name,

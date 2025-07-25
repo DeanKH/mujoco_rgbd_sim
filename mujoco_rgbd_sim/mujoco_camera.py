@@ -1,11 +1,7 @@
 import numpy as np
 import mujoco
-import cv2
-import matplotlib.pyplot as plt
-import matplotlib
-from typing import Tuple, Optional
+from typing import Tuple
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass
 import math
 
 

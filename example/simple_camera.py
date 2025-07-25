@@ -1,6 +1,5 @@
 import mujoco_rgbd_sim.mujoco_scene_builder as sb
 import mujoco_rgbd_sim.mujoco_sim as ms
-import pprint
 import cv2
 import numpy as np
 

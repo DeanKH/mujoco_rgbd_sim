@@ -1,13 +1,6 @@
-import numpy as np
-import mujoco
-import cv2
-import matplotlib.pyplot as plt
-import matplotlib
-from typing import Tuple, Optional, Union
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass
 from mujoco_rgbd_sim.mujoco_camera import Camera
-from mujoco_rgbd_sim.geometric_objects import GeometricObject, Box, Cylinder, Mesh
+from mujoco_rgbd_sim.geometric_objects import GeometricObject
 
 
 class MujocoSceneBuilder:

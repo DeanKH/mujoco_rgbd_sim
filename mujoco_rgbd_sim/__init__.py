@@ -14,7 +14,7 @@ from mujoco_rgbd_sim.mujoco_sim import MujocoSimulation
 
 __all__ = [
     "GeometricObject",
-    "Box", 
+    "Box",
     "Cylinder",
     "Mesh",
     "Camera",

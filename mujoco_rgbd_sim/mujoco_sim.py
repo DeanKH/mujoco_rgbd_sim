@@ -1,11 +1,6 @@
 import numpy as np
 import mujoco
-import cv2
-import matplotlib.pyplot as plt
-import matplotlib
-from typing import Tuple, Optional
-import xml.etree.ElementTree as ET
-from dataclasses import dataclass
+from typing import Tuple
 from mujoco_rgbd_sim.mujoco_camera import Camera
 
 
