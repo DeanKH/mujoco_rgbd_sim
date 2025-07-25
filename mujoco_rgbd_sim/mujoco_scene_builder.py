@@ -7,7 +7,7 @@ from typing import Tuple, Optional, Union
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from mujoco_rgbd_sim.mujoco_camera import Camera
-from mujoco_rgbd_sim.geometric_objects import GeometricObject, Box, Cylinder
+from mujoco_rgbd_sim.geometric_objects import GeometricObject, Box, Cylinder, Mesh
 
 
 class MujocoSceneBuilder:

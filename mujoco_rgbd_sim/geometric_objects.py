@@ -64,3 +64,34 @@ class Cylinder(GeometricObject):
 
     def get_size_string(self) -> str:
         return f"{self.radius} {self.height}"
+
+
+@dataclass
+class Mesh(GeometricObject):
+    """Mesh geometric object"""
+    mesh_name: str = ""
+    scale: Tuple[float, float, float] = (1.0, 1.0, 1.0)
+
+    def get_geom_type(self) -> str:
+        return "mesh"
+
+    def get_size_string(self) -> str:
+        return " ".join(map(str, self.scale))
+
+    def to_xml_tree(self) -> ET.Element:
+        """Convert mesh object to XML tree element"""
+        body_elem = ET.Element(
+            "body",
+            name=self.name,
+            pos=" ".join(map(str, self.position)),
+            euler=" ".join(map(str, self.euler)),
+        )
+        geom_elem = ET.SubElement(
+            body_elem,
+            "geom",
+            name=self.name,
+            mesh=self.mesh_name,
+            type=self.get_geom_type(),
+            rgba=" ".join(map(str, self.color)),
+        )
+        return body_elem
