@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
@@ -10,8 +10,16 @@ class GeometricObject(ABC):
 
     name: str
     position: Tuple[float, float, float] = (0, 0, 0)
-    euler: Tuple[float, float, float] = (0, 0, 0)
+    euler: Optional[Tuple[float, float, float]] = None
+    quat: Optional[Tuple[float, float, float, float]] = None  # w, x, y, z
     color: Tuple[float, float, float, float] = (1, 1, 1, 1)
+
+    def __post_init__(self):
+        """Validate that either euler or quat is provided, not both"""
+        if self.euler is not None and self.quat is not None:
+            raise ValueError("Cannot specify both euler and quat. Choose one.")
+        if self.euler is None and self.quat is None:
+            self.euler = (0, 0, 0)  # Default to zero euler angles
 
     @abstractmethod
     def get_geom_type(self) -> str:
@@ -25,12 +33,18 @@ class GeometricObject(ABC):
 
     def get_worldbody_element(self) -> ET.Element:
         """Convert object to XML tree element"""
-        body_elem = ET.Element(
-            "body",
-            name=self.name,
-            pos=" ".join(map(str, self.position)),
-            euler=" ".join(map(str, self.euler)),
-        )
+        body_attrs = {
+            "name": self.name,
+            "pos": " ".join(map(str, self.position)),
+        }
+
+        # Add orientation: either euler or quat
+        if self.euler is not None:
+            body_attrs["euler"] = " ".join(map(str, self.euler))
+        elif self.quat is not None:
+            body_attrs["quat"] = " ".join(map(str, self.quat))
+
+        body_elem = ET.Element("body", **body_attrs)
         ET.SubElement(
             body_elem,
             "geom",
@@ -84,12 +98,18 @@ class Mesh(GeometricObject):
 
     def get_worldbody_element(self) -> ET.Element:
         """Convert mesh object to XML tree element"""
-        body_elem = ET.Element(
-            "body",
-            name=self.name,
-            pos=" ".join(map(str, self.position)),
-            euler=" ".join(map(str, self.euler)),
-        )
+        body_attrs = {
+            "name": self.name,
+            "pos": " ".join(map(str, self.position)),
+        }
+
+        # Add orientation: either euler or quat
+        if self.euler is not None:
+            body_attrs["euler"] = " ".join(map(str, self.euler))
+        elif self.quat is not None:
+            body_attrs["quat"] = " ".join(map(str, self.quat))
+
+        body_elem = ET.Element("body", **body_attrs)
         ET.SubElement(
             body_elem,
             "geom",

@@ -42,6 +42,14 @@ box = go.Box(
     color=(0.8, 0.2, 0.2, 1.0),
 )
 
+box1 = go.Box(
+    name="box1",
+    size=(0.1, 0.1, 0.1),
+    position=(0.25, 0.25, 0.05),
+    quat=(0.9238795, 0.0, 0.0, 0.3826834),
+    color=(0.2, 0.8, 0.2, 1.0),
+)
+
 # mesh = go.Mesh(
 #     name="mesh0",
 #     mesh_name="binary_cube.stl",
@@ -54,6 +62,7 @@ xml_str = (
     .add_camera(ceil_camera)
     .add_camera(hand_camera)
     .add_object(box)
+    .add_object(box1)
     .build()
 )
 
