@@ -40,7 +40,7 @@ class Camera:
             )
         return self.renderer
 
-    def to_xml_tree(self) -> ET.Element:
+    def get_worldbody_element(self) -> ET.Element:
         camera_elem = ET.Element(
             "camera",
             name=self.name,

@@ -1,4 +1,6 @@
 import mujoco_rgbd_sim.mujoco_scene_builder as sb
+import mujoco_rgbd_sim.geometric_objects as go
+import mujoco_rgbd_sim.mujoco_camera as mc
 import mujoco_rgbd_sim.mujoco_sim as ms
 import cv2
 import numpy as np
@@ -16,7 +18,7 @@ def output_as_xyz(filename: str, data: np.ndarray):
             f.write(f"{point[0]} {point[1]} {point[2]}\n")
 
 
-ceil_camera = sb.Camera(
+ceil_camera = mc.Camera(
     name="ceil_camera0",
     position=(0, 0, 1.5),
     xyaxes=(1, 0, 0, 0, 1, 0),
@@ -25,7 +27,7 @@ ceil_camera = sb.Camera(
     camera_height=720,
 )
 
-hand_camera = sb.Camera(
+hand_camera = mc.Camera(
     name="hand_camera0",
     position=(0, 0, 0.5),
     xyaxes=(1, 0, 0, 0, 1, 0),
@@ -33,13 +35,19 @@ hand_camera = sb.Camera(
     camera_width=640,
     camera_height=480,
 )
-box = sb.Box(
+box = go.Box(
     name="box0",
     size=(0.08, 0.06, 0.05),
     position=(0, 0, 0.025),
     color=(0.8, 0.2, 0.2, 1.0),
 )
 
+# mesh = go.Mesh(
+#     name="mesh0",
+#     mesh_name="binary_cube.stl",
+#     position=(0.25, 0.25, 0.025),
+#     scale=(0.1, 0.1, 0.1),
+# )
 xml_str = (
     sb.MujocoSceneBuilder()
     .set_scene_template_file("empty_scene.xml")
@@ -60,8 +68,10 @@ for camera in [ceil_camera, hand_camera]:
     print(f"Camera: {camera.name}, Position: {camera.position}, FOVY: {camera.fovy}")
     image, depth = sim.capture_image(camera)
     # normalize depth
-    # depth = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
-    # depth = depth.astype(np.uint8)
+    depth_vis = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
+    depth_vis = depth_vis.astype(np.uint8)
+    # colorize depth for visualization
+    depth_vis = cv2.applyColorMap(depth_vis, cv2.COLORMAP_JET)
     intrinsic = camera.get_camera_matrix()
 
     data = []
@@ -76,6 +86,6 @@ for camera in [ceil_camera, hand_camera]:
     output_as_xyz(f"output/{camera.name}_depth.xyz", data)
 
     cv2.imshow("Captured Image", image)
-    cv2.imshow("Depth Image", depth)
+    cv2.imshow("Depth Image", depth_vis)
     cv2.waitKey(0)
 cv2.destroyAllWindows()

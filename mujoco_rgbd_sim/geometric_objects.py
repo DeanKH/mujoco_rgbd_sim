@@ -23,7 +23,7 @@ class GeometricObject(ABC):
         """Return the size parameter string for MuJoCo"""
         pass
 
-    def to_xml_tree(self) -> ET.Element:
+    def get_worldbody_element(self) -> ET.Element:
         """Convert object to XML tree element"""
         body_elem = ET.Element(
             "body",
@@ -82,7 +82,7 @@ class Mesh(GeometricObject):
     def get_size_string(self) -> str:
         return " ".join(map(str, self.scale))
 
-    def to_xml_tree(self) -> ET.Element:
+    def get_worldbody_element(self) -> ET.Element:
         """Convert mesh object to XML tree element"""
         body_elem = ET.Element(
             "body",

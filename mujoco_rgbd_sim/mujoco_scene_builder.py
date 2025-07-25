@@ -34,9 +34,9 @@ class MujocoSceneBuilder:
             raise ValueError("Worldbody element not found in the XML template.")
 
         for obj in self.objects:
-            worldbody.append(obj.to_xml_tree())
+            worldbody.append(obj.get_worldbody_element())
 
         for cam in self.cameras:
-            worldbody.append(cam.to_xml_tree())
+            worldbody.append(cam.get_worldbody_element())
         ET.indent(self.xml_content)
         return ET.tostring(self.xml_content).decode("utf-8")
