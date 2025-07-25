@@ -6,6 +6,7 @@ import matplotlib
 from typing import Tuple, Optional
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+import math
 
 
 class Camera:
@@ -51,3 +52,47 @@ class Camera:
             xyaxes=" ".join(map(str, self.xyaxes)),
         )
         return camera_elem
+
+    def compute_camera_intrinsics(self):
+        """
+        MujocoのCameraパラメータから内部行列(fx, fy, cx, cy)を計算する
+
+        Args:
+            camera: Camera object with fovy, camera_width, camera_height attributes
+
+        Returns:
+            tuple: (fx, fy, cx, cy)
+        """
+        camera = self
+
+        # 画像の中心座標 (cx, cy)
+        cx = camera.camera_width / 2.0
+        cy = camera.camera_height / 2.0
+
+        # FOVYから焦点距離を計算
+        # fy = height / (2 * tan(fovy/2))
+        fovy_rad = math.radians(camera.fovy)
+        fy = camera.camera_height / math.tan(fovy_rad / 2.0)
+
+        # アスペクト比から fovx を計算し、fx を求める
+        aspect_ratio = camera.camera_width / camera.camera_height
+        fovx_rad = 2.0 * math.atan(aspect_ratio * math.tan(fovy_rad / 2.0))
+        fx = camera.camera_width / math.tan(fovx_rad / 2.0)
+
+        return fx, fy, cx, cy
+
+    def get_camera_matrix(self):
+        """
+        内部行列をOpenCV形式の3x3行列として取得
+
+        Args:
+            camera: Camera object
+
+        Returns:
+            numpy.ndarray: 3x3 camera matrix
+        """
+        fx, fy, cx, cy = self.compute_camera_intrinsics()
+
+        camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+
+        return camera_matrix

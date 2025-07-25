@@ -4,6 +4,19 @@ import pprint
 import cv2
 import numpy as np
 
+
+def output_as_xyz(filename: str, data: np.ndarray):
+    """
+    データをXYZ形式でファイルに出力
+    Args:
+        filename: 出力ファイル名
+        data: 出力するデータ (N, 3) の形状を持つnumpy配列
+    """
+    with open(filename, "w") as f:
+        for point in data:
+            f.write(f"{point[0]} {point[1]} {point[2]}\n")
+
+
 ceil_camera = sb.Camera(
     name="ceil_camera0",
     position=(0, 0, 1.5),
@@ -47,11 +60,23 @@ sim.setup(xml_str)
 for camera in [ceil_camera, hand_camera]:
     print(f"Camera: {camera.name}, Position: {camera.position}, FOVY: {camera.fovy}")
     image, depth = sim.capture_image(camera)
-    cv2.imshow("Captured Image", image)
-
     # normalize depth
-    depth = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
-    depth = depth.astype(np.uint8)
+    # depth = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
+    # depth = depth.astype(np.uint8)
+    intrinsic = camera.get_camera_matrix()
+
+    data = []
+    for y in range(depth.shape[0]):
+        for x in range(depth.shape[1]):
+            z = depth[y, x]
+            if z > 0:  # Skip invalid depth values
+                x_world = (x - intrinsic[0, 2]) * z / intrinsic[0, 0]
+                y_world = (y - intrinsic[1, 2]) * z / intrinsic[1, 1]
+                data.append([x_world, y_world, z])
+    data = np.array(data)
+    output_as_xyz(f"output/{camera.name}_depth.xyz", data)
+
+    cv2.imshow("Captured Image", image)
     cv2.imshow("Depth Image", depth)
     cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -20,9 +20,7 @@ class MujocoSimulation:
         self.model = mujoco.MjModel.from_xml_string(scene_xml_str)
         self.data = mujoco.MjData(self.model)
         # MjRenderContextOffscreen
-        self.renderer = mujoco.Renderer(
-            self.model, self.render_size[1], self.render_size[0]
-        )
+        self.renderer = mujoco.Renderer(self.model)
         mujoco.mj_step(self.model, self.data)
 
     def capture_image(self, camera: Camera) -> Tuple[np.ndarray, np.ndarray]:
@@ -42,9 +40,12 @@ class MujocoSimulation:
         rgb_image = renderer.render()
 
         renderer.enable_depth_rendering()
+        renderer.update_scene(self.data, camera=camera_id)
         depth = renderer.render()
         renderer.disable_depth_rendering()
 
-        depth -= depth.min()
+        min_depth = depth.min()
+        max_depth = depth.max()
+        print(f"Depth min: {min_depth}, max: {max_depth}")
 
         return rgb_image, depth
