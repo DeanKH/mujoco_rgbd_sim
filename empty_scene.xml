@@ -1,0 +1,19 @@
+<mujoco model="rgb_camera_scene">
+    <!-- add gravity -->
+    <option gravity="0 0 0" timestep="0.01" integrator="RK4"/>
+    <visual>
+        <global offwidth="2048" offheight="2048"/>
+    </visual>
+    <asset>
+        <texture name="grid" type="2d" builtin="checker" width="512" height="512" 
+                  rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+        <material name="grid" texture="grid" texrepeat="1 1" reflectance=".2"/>
+    </asset>
+    
+    <worldbody>
+        <geom name="ground" size="5 5 0.1" type="plane" material="grid"/>
+        <light name="light1" pos="2 2 3" dir="-1 -1 -1" diffuse="1 1 1"/>
+        <light name="light2" pos="-2 2 3" dir="1 -1 -1" diffuse="0.5 0.5 0.5"/>
+
+    </worldbody>
+</mujoco>
