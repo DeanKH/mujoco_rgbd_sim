@@ -2,6 +2,7 @@ import mujoco_rgbd_sim.mujoco_scene_builder as sb
 import mujoco_rgbd_sim.geometric_objects as go
 import mujoco_rgbd_sim.mujoco_camera as mc
 import mujoco_rgbd_sim.mujoco_sim as ms
+import mujoco_rgbd_sim.empty_scene as es
 import cv2
 import numpy as np
 import transforms3d as t3d
@@ -59,7 +60,7 @@ box1 = go.Box(
 # )
 xml_str = (
     sb.MujocoSceneBuilder()
-    .set_scene_template_file("empty_scene.xml")
+    .set_scene_template_text(es.create_empty_scene())
     .add_camera(ceil_camera)
     .add_camera(hand_camera)
     .add_object(box)
