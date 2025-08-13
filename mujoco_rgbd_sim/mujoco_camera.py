@@ -78,12 +78,12 @@ class Camera:
         # FOVYから焦点距離を計算
         # fy = height / (2 * tan(fovy/2))
         fovy_rad = math.radians(camera.fovy)
-        fy = camera.camera_height / math.tan(fovy_rad / 2.0)
+        fy = camera.camera_height / (2 * math.tan(fovy_rad / 2.0))
 
         # アスペクト比から fovx を計算し、fx を求める
         aspect_ratio = camera.camera_width / camera.camera_height
         fovx_rad = 2.0 * math.atan(aspect_ratio * math.tan(fovy_rad / 2.0))
-        fx = camera.camera_width / math.tan(fovx_rad / 2.0)
+        fx = camera.camera_width / (2 * math.tan(fovx_rad / 2.0))
 
         return fx, fy, cx, cy
 
