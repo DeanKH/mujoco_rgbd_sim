@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import mujoco
 from typing import Tuple
@@ -41,10 +42,55 @@ class MujocoSimulation:
 
         min_depth = depth.min()
         max_depth = depth.max()
-        print(f"Depth min: {min_depth}, max: {max_depth}")
+        # 浮動小数点 3桁
+        print(f"Depth min: {min_depth:.3f}, max: {max_depth:.3f}")
 
         depth *= camera.depth_factor
         # type change to uint16 for depth
         depth = depth.astype(np.uint16)
 
         return rgb_image, depth
+
+    def capture_object_segment_image(
+        self, camera: Camera, object_name: str
+    ) -> np.ndarray:
+        if self.model is None or self.data is None:
+            raise ValueError(
+                "シミュレーションが初期化されていません。setup_simulation()を先に呼び出してください。"
+            )
+        camera_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_CAMERA, camera.name
+        )
+        if camera_id == -1:
+            raise ValueError(f"カメラ '{camera.name}' が見つかりません")
+
+        object_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, object_name)
+        if object_id == -1:
+            raise ValueError(f"オブジェクト '{object_name}' が見つかりません")
+
+        renderer = camera.get_renderer(self.model)
+        renderer.enable_segmentation_rendering()
+        renderer.update_scene(self.data, camera=camera_id)
+        seg = renderer.render()
+        renderer.disable_segmentation_rendering()
+
+        geom_ids = seg[:, :, 0]
+        object_boolean_mask = geom_ids == object_id
+        geom_ids = np.where(object_boolean_mask, 255, 0).astype(np.uint8)
+
+        kernel = np.ones((3, 3), np.uint8)
+        geom_ids = cv2.morphologyEx(geom_ids, cv2.MORPH_CLOSE, kernel)
+        geom_ids = cv2.morphologyEx(geom_ids, cv2.MORPH_OPEN, kernel)
+
+        return geom_ids
+
+    def change_visibility(self, object_name: str, visibility: bool):
+        if self.model is None or self.data is None:
+            raise ValueError(
+                "シミュレーションが初期化されていません。setup_simulation()を先に呼び出してください。"
+            )
+        object_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, object_name)
+        if object_id == -1:
+            raise ValueError(f"オブジェクト '{object_name}' が見つかりません")
+
+        self.model.geom_rgba[object_id][3] = 1.0 if visibility else 0.0
